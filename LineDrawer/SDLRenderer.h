@@ -7,13 +7,11 @@ class SDLRenderer :
 public:
 	SDLRenderer();
 	~SDLRenderer();
-	void loadImage( std::string path );
-	void draw();
+	SDL_Surface* getScreenSurface();
+	SDL_Renderer* getRenderer();
 private:
 	SDL_Window*		window			= NULL;
 	SDL_Surface*	screenSurface	= NULL;
-	SDL_Surface*	imgSurface		= NULL;
 	SDL_Renderer*	renderer		= NULL;
-
 };
 

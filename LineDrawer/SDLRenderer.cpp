@@ -19,9 +19,6 @@ SDLRenderer::SDLRenderer()
 
 SDLRenderer::~SDLRenderer()
 {
-	SDL_FreeSurface(imgSurface);
-	imgSurface = NULL;
-
 	SDL_DestroyRenderer(renderer);
 	renderer = NULL;
 
@@ -33,34 +30,12 @@ SDLRenderer::~SDLRenderer()
 	SDL_Quit();
 }
 
-void SDLRenderer::loadImage(std::string path)
+SDL_Surface * SDLRenderer::getScreenSurface()
 {
-	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
-	if (loadedSurface == NULL) {
-		printf("Error loading image %s, ERROR:%s\n", path.c_str(), IMG_GetError());
-	}
-	else {
-		imgSurface = SDL_ConvertSurface(loadedSurface, screenSurface->format, NULL);
-		if (imgSurface == NULL) {
-			printf("Unable to optimize image %s:%s\n", path.c_str(), SDL_GetError());
-		}
-
-		SDL_RenderSetLogicalSize(renderer, imgSurface->w, imgSurface->h);
-
-		printf("Bits per pixel: %d\n", imgSurface->format->BitsPerPixel);
-		printf("Red mask: %x\n", imgSurface->format->Rmask);
-		printf("Green mask: %x\n", imgSurface->format->Gmask);
-		printf("Blue mask: %x\n", imgSurface->format->Bmask);
-		printf("Alpha mask: %x\n", imgSurface->format->Amask);
-		SDL_FreeSurface(loadedSurface);
-	}
-	SDLSurface s("bunny.jpg", screenSurface);
-	std::set<Colour, ColourComp> palette = s.getPalette();
+	return screenSurface;
 }
 
-void SDLRenderer::draw()
+SDL_Renderer * SDLRenderer::getRenderer()
 {
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, imgSurface);
-	SDL_RenderCopy(renderer, texture, NULL, NULL);
-	SDL_RenderPresent(renderer);
+	return renderer;
 }

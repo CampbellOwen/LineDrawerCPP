@@ -2,14 +2,14 @@
 #include "SDLSurface.h"
 
 
-SDLSurface::SDLSurface( std::string path, SDL_Surface* screenSurface )
+SDLSurface::SDLSurface( std::string path, SDLRenderer& renderer )
 {
 	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
 	if (loadedSurface == NULL) {
 		printf("Error loading image %s, ERROR:%s\n", path.c_str(), IMG_GetError());
 	}
 	else {
-		surface = SDL_ConvertSurface(loadedSurface, screenSurface->format, NULL);
+		surface = SDL_ConvertSurface(loadedSurface, renderer.getScreenSurface()->format, NULL);
 		if (surface == NULL) {
 			printf("Unable to optimize image %s:%s\n", path.c_str(), SDL_GetError());
 		}
@@ -63,4 +63,10 @@ Colour SDLSurface::toColour(Uint32 c)
 	SDL_GetRGB(c, surface->format, &r, &g, &b);
 
 	return Colour{ r, g, b };
+}
+
+void SDLSurface::draw(Renderer& renderer)
+{
+
+
 }
