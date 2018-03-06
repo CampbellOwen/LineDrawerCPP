@@ -23,6 +23,20 @@ SDLSurface::SDLSurface( std::string path, SDLRenderer& renderer )
 	}
 }
 
+SDLSurface::SDLSurface(SDLSurface & other)
+{
+	surface = SDL_CreateRGBSurface(
+		0,
+		other.getWidth(),
+		other.getHeight(),
+		other.surface->format->BitsPerPixel,
+		other.surface->format->Rmask,
+		other.surface->format->Gmask,
+		other.surface->format->Bmask,
+		other.surface->format->Amask
+	);
+}
+
 SDLSurface::~SDLSurface()
 {
 	SDL_FreeSurface(surface);
@@ -30,7 +44,11 @@ SDLSurface::~SDLSurface()
 }
 
 Pixel SDLSurface::getPixel(Location location) {
+	SDL_LockSurface(surface);
+
 	Uint32* pixels = (Uint32*)surface->pixels;
+
+	SDL_UnlockSurface(surface);
 
 	Uint32 pixel = pixels[(location.y * surface->w) + location.x];
 
@@ -39,20 +57,44 @@ Pixel SDLSurface::getPixel(Location location) {
 
 void SDLSurface::setPixel(Location location, Colour colour)
 {
+	SDL_LockSurface(surface);
+
 	Uint32 c = SDL_MapRGB(surface->format, colour.r, colour.g, colour.b);
 	Uint32* pixels = (Uint32*)surface->pixels;
 	pixels[(location.y * surface->w) + location.x] = c;
+	SDL_UnlockSurface(surface);
+
 }
 
 std::set<Colour, ColourComp> SDLSurface::getPalette()
 {
+	SDL_LockSurface(surface);
+
+	Uint32* pixels = (Uint32*)surface->pixels;
+
 	std::set<Colour, ColourComp> palette;
 	for (int i = 0; i < surface->h * surface->w; i++)
 	{
-		palette.insert(this->getPixel(Location{ i % surface->w, i / surface->w }).colour);
+		palette.insert(toColour(pixels[i]));
 	}
+	SDL_UnlockSurface(surface);
 
 	return palette;
+}
+
+SDL_Surface * SDLSurface::getSurface()
+{
+	return surface;
+}
+
+int SDLSurface::getWidth()
+{
+	return surface->w;
+}
+
+int SDLSurface::getHeight()
+{
+	return surface->h;
 }
 
 Colour SDLSurface::toColour(Uint32 c)
@@ -63,10 +105,4 @@ Colour SDLSurface::toColour(Uint32 c)
 	SDL_GetRGB(c, surface->format, &r, &g, &b);
 
 	return Colour{ r, g, b };
-}
-
-void SDLSurface::draw(Renderer& renderer)
-{
-
-
 }
