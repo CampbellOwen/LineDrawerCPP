@@ -12,7 +12,6 @@ public:
 	Pixel getPixel(Location location);
 	void setPixel(Location location, Colour colour);
 	void setPixels(std::vector<Pixel> pixels);
-	std::set<Colour, ColourComp> getPalette();
 
 private:
 	SDL_Texture * texture;

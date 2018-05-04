@@ -30,13 +30,6 @@ void SDLTexture::setPixels(std::vector<Pixel> pixels)
 
 }
 
-
-
-std::set<Colour, ColourComp> SDLTexture::getPalette()
-{
-	return std::set<Colour, ColourComp>();
-}
-
 Colour SDLTexture::toColour(Uint32 c) 
 {
 	return Colour{ 0,0,0 };

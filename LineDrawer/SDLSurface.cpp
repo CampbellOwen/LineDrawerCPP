@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SDLSurface.h"
+#include <unordered_map>
 
 
 SDLSurface::SDLSurface( std::string path, SDLRenderer& renderer )
@@ -66,19 +67,28 @@ void SDLSurface::setPixel(Location location, Colour colour)
 
 }
 
-std::set<Colour, ColourComp> SDLSurface::getPalette()
+std::unordered_map<Colour, double, ColourHasher> SDLSurface::getPalette()
 {
 	SDL_LockSurface(surface);
 
 	Uint32* pixels = (Uint32*)surface->pixels;
 
-	std::set<Colour, ColourComp> palette;
+	std::unordered_map<Colour, double, ColourHasher> palette;
 	for (int i = 0; i < surface->h * surface->w; i++)
 	{
-		palette.insert(toColour(pixels[i]));
+		Colour colour = toColour(pixels[i]);
+		if (palette.find(colour) != palette.end()) {
+			palette[colour]++;
+		}
+		else {
+			palette.insert({ colour, 0 });
+		}
 	}
 	SDL_UnlockSurface(surface);
 
+	for (auto it : palette) {
+		palette[it.first] = (it.second * 1.0) / (surface->w*surface->h);
+	}
 	return palette;
 }
 

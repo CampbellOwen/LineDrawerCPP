@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "Image.h"
 #include "SDLRenderer.h"
+#include <unordered_map>
 
 class SDLRenderer;
 
@@ -15,7 +16,7 @@ public:
 	~SDLSurface();
 	Pixel getPixel(Location location);
 	void setPixel(Location location, Colour colour);
-	std::set<Colour, ColourComp> getPalette();
+	std::unordered_map<Colour, double, ColourHasher> getPalette();
 	SDL_Surface* getSurface();
 	int getWidth();
 	int getHeight();
